@@ -4,40 +4,33 @@
 
 #include "cells.h"
 
-
-CellType GameObject::get_type() {
-    return object_type;
-}
-
-GameObject::GameObject() {
-    this->object_type = CellType::EMPTY;
-}
+using namespace std;
 
 Mole::Mole(bool sex, int default_steps_until_hide) {
     this->default_steps_until_hide = default_steps_until_hide;
     this->steps_until_hide = default_steps_until_hide;
     this->sex = sex;
-    this->object_type = CellType::MOLE;
 }
 
 int Mole::get_random_number(int min, int max) {
-    // Установить генератор случайных чисел
-    srand(time(nullptr));
-
-    // Получить случайное число - формула
-    int num = min + rand() % (max - min + 1);
-
-    return num;
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dist(min, max);
+    return dist(gen);
 }
 
-Point::Point(int x, int y) {
+Point::Point(int y, int x) {
     this->x = x;
     this->y = y;
 }
 
+Point::Point() {
+
+}
+
 Point Mole::want_move_to(int field_width, int field_height) {
-    int x = get_random_number(0, field_width);
-    int y = get_random_number(0, field_height);
+    int x = get_random_number(0, field_width - 1);
+    int y = get_random_number(0, field_height - 1);
     return *new Point(x, y);
 }
 
@@ -46,11 +39,27 @@ void Mole::try_get_underground() {
         this->steps_until_hide = this->steps_until_hide - 1;
     } else {
         this->is_underground = true;
+        steps_until_hide = default_steps_until_hide;
+        has_moved = false;
     }
+}
+
+Mole::Mole() {
+
 }
 
 Cottager::Cottager(int move_speed, int hit_radius) {
     this->move_speed = move_speed;
     this->hit_radius = hit_radius;
-    this->object_type = CellType::COTTAGER;
+}
+
+Cottager::Cottager() {
+
+}
+
+Cell::Cell(CellType cell_type) : cell_type(cell_type){
+}
+
+Cell::Cell() {
+
 }
